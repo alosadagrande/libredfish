@@ -104,7 +104,7 @@ pub struct System {
     pub estimated_system_airflow_cfm: Option<i64>,
     pub express_service_code: String,
     pub fan_rollup_status: Option<String>, // null->None if machine is off
-    pub intrusion_rollup_status: String,
+    pub intrusion_rollup_status: Option<String>,
     pub managed_system_size: String,
     #[serde(rename = "MaxCPUSockets")]
     pub max_cpu_sockets: i64,
@@ -123,7 +123,7 @@ pub struct System {
     pub temp_rollup_status: String, // Observed as null if machine is off, kept as String for backwards-compat
     #[serde(rename = "UUID")]
     pub uuid: String,
-    pub volt_rollup_status: String,
+    pub volt_rollup_status: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Copy, Clone, Eq, PartialEq)]
