@@ -1812,7 +1812,10 @@ impl Bmc {
             sriov_global_enable: EnabledDisabled::Enabled,
             tpm_security: OnOff::On,
             tpm2_hierarchy: dell::Tpm2HierarchySettings::Clear,
-            tpm2_algorithm: dell::Tpm2Algorithm::SHA256,
+            tpm2_algorithm: curr_bios_attributes
+                .get("Tpm2Algorithm")
+                .and_then(|v| serde_json::from_value::<dell::Tpm2Algorithm>(v.clone()).ok())
+                .unwrap_or(dell::Tpm2Algorithm::SHA256),
             http_device_1_enabled_disabled: EnabledDisabled::Enabled,
             pxe_device_1_enabled_disabled: EnabledDisabled::Disabled,
             boot_mode,
