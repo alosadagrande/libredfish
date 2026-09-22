@@ -1811,7 +1811,10 @@ impl Bmc {
             redir_after_boot,
             sriov_global_enable: EnabledDisabled::Enabled,
             tpm_security: OnOff::On,
-            tpm2_hierarchy: dell::Tpm2HierarchySettings::Clear,
+            tpm2_hierarchy: curr_bios_attributes
+                .get("Tpm2Hierarchy")
+                .and_then(|v| serde_json::from_value::<dell::Tpm2HierarchySettings>(v.clone()).ok())
+                .unwrap_or(dell::Tpm2HierarchySettings::Clear),
             tpm2_algorithm: curr_bios_attributes
                 .get("Tpm2Algorithm")
                 .and_then(|v| serde_json::from_value::<dell::Tpm2Algorithm>(v.clone()).ok())
