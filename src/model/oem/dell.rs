@@ -262,9 +262,10 @@ pub struct MachineBiosAttrs {
     pub http_device_1_enabled_disabled: EnabledDisabled,
     #[serde(rename = "PxeDev1EnDis")]
     pub pxe_device_1_enabled_disabled: EnabledDisabled,
-    #[serde(rename = "HttpDev1Interface")]
-    pub http_device_1_interface: String,
-    pub set_boot_order_en: String,
+    #[serde(rename = "HttpDev1Interface", skip_serializing_if = "Option::is_none")]
+    pub http_device_1_interface: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub set_boot_order_en: Option<String>,
     #[serde(rename = "HttpDev1TlsMode")]
     pub http_device_1_tls_mode: TlsMode,
     pub set_boot_order_dis: String,

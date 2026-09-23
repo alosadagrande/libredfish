@@ -1125,11 +1125,9 @@ impl Bmc {
             expected_attrs.pxe_device_1_enabled_disabled,
             EnabledDisabled
         );
-        diff!(
-            "HttpDev1Interface",
-            expected_attrs.http_device_1_interface,
-            String
-        );
+        if let Some(ref expected_http_dev) = expected_attrs.http_device_1_interface {
+            diff!("HttpDev1Interface", expected_http_dev.clone(), String);
+        }
         diff!(
             "HttpDev1TlsMode",
             expected_attrs.http_device_1_tls_mode,
@@ -1822,8 +1820,16 @@ impl Bmc {
             http_device_1_enabled_disabled: EnabledDisabled::Enabled,
             pxe_device_1_enabled_disabled: EnabledDisabled::Disabled,
             boot_mode,
-            http_device_1_interface: nic_slot.to_string(),
-            set_boot_order_en: nic_slot.to_string(),
+            http_device_1_interface: if nic_slot.is_empty() {
+                None
+            } else {
+                Some(nic_slot.to_string())
+            },
+            set_boot_order_en: if nic_slot.is_empty() {
+                None
+            } else {
+                Some(nic_slot.to_string())
+            },
             http_device_1_tls_mode: dell::TlsMode::None,
             // We used to use this to disable all boot options other than the PXE boot option we wanted
             // We found that it can cause the boot disk option to be disabled in the termination flow.
