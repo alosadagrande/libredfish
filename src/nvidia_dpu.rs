@@ -170,11 +170,24 @@ impl Redfish for Bmc {
             })?;
             let expected = HostPrivilegeLevel::Restricted;
             if actual != expected {
-                diffs.push(MachineSetupDiff {
-                    key: key.to_string(),
-                    actual: actual.to_string(),
-                    expected: expected.to_string(),
-                });
+                // FIELD WORKAROUND (GB300 NVL72 lab): on GA SECURED BlueField-3 the BMC
+                // firmware accepts the HostPrivilegeLevel=Restricted PATCH (HTTP 200) but
+                // never commits it (and mlxprivhost `r` fails RC=3), so this diff would
+                // never clear and the DPU loops forever in DpuInit/PollingBiosSetup.
+                // We still ATTEMPT the PATCH in machine_setup (set_host_privilege_level),
+                // we just do not gate readiness on it until NVIDIA fixes the firmware.
+                // See dsx-ai-factory/infra-controller#8362 and the NVIDIA escalation.
+                // Revert this (restore the diffs.push below) once the firmware commits it.
+                tracing::warn!(
+                    "DPU HostPrivilegeLevel is {actual} (expected {expected}); \
+                     deferring this check (firmware does not commit Restricted in-field, \
+                     see infra-controller#8362). Proceeding as if satisfied."
+                );
+                // diffs.push(MachineSetupDiff {
+                //     key: key.to_string(),
+                //     actual: actual.to_string(),
+                //     expected: expected.to_string(),
+                // });
             }
 
             let key = "InternalCPUModel";
